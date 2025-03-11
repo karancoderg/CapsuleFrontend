@@ -1,0 +1,79 @@
+.collab-capsule-detail {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .collab-capsule-detail h2,
+  .collab-capsule-detail h3 {
+    text-align: center;
+    color: #1e3c72;
+  }
+  
+  .capsule-locked {
+    text-align: center;
+    margin: 1rem 0;
+    color: #ff4757;
+  }
+  
+  .capsule-unlocked {
+    margin: 1rem 0;
+  }
+  
+  .media-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 0.5rem;
+  }
+  
+  .capsule-media, .entry-media {
+    max-width: 100%;
+    border-radius: 6px;
+  }
+  
+  .entry-form {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .entry-form textarea {
+    padding: 0.75rem;
+    resize: vertical;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .entry-form input[type="date"],
+  .entry-form input[type="file"] {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .entry-form button {
+    padding: 0.75rem;
+    background-color: #1e3c72;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .entry-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .entry-node {
+    background: #f7f7f7;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+  }
+  
