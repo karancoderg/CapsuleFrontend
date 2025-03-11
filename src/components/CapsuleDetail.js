@@ -20,7 +20,7 @@ const CollaborativeCapsuleDetail = () => {
   // Fetch capsule details (including entries) from backend
   const fetchCapsule = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/capsules/${capsuleId}`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCapsule(res.data);
@@ -51,7 +51,7 @@ const CollaborativeCapsuleDetail = () => {
       const formData = new FormData();
       formData.append("mediaFile", file);
 
-      const res = await axios.post("http://localhost:5000/api/capsules/upload", formData, {
+      const res = await axios.post("${process.env.REACT_APP_API_URL}/api/capsules/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`
@@ -91,7 +91,7 @@ const CollaborativeCapsuleDetail = () => {
       console.log("Submitting payload:", JSON.stringify(payload, null, 2));
 
       await axios.post(
-        `http://localhost:5000/api/capsules/${capsuleId}/entries`,
+        `${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}/entries`,
         payload,
         {
           headers: {

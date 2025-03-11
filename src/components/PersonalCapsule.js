@@ -29,7 +29,7 @@ const PersonalCapsule = () => {
       const formData = new FormData();
       formData.append("mediaFile", file);
 
-      const res = await axios.post("http://localhost:5000/api/capsules/upload", formData, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/capsules/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -64,7 +64,7 @@ const PersonalCapsule = () => {
         type: "personal",
       };
 
-      const res = await axios.post("http://localhost:5000/api/capsules", payload, {
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/capsules`, payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

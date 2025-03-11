@@ -11,7 +11,7 @@ const CollaborativeCapsuleTree = () => {
   useEffect(() => {
     const fetchCollaborativeCapsules = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/capsules", {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/capsules`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const capsulesData =
