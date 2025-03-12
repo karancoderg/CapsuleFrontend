@@ -1,35 +1,165 @@
 .collaborative-capsule-container {
-  max-width: 500px;
-  margin: 3rem auto;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 550px;
+  margin: 3.5rem auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.collaborative-capsule-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
 .collaborative-capsule-container h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #2a5298;
+  margin-bottom: 2rem;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.collaborative-capsule-container h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  border-radius: 3px;
+}
+
+.collaborative-capsule-container form {
+  animation: slideUp 0.5s ease-in-out 0.2s both;
 }
 
 .collaborative-capsule-container form input,
 .collaborative-capsule-container form textarea {
   width: 100%;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
   font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.collaborative-capsule-container form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.collaborative-capsule-container form input:focus,
+.collaborative-capsule-container form textarea:focus {
+  border-color: #38bdf8;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+}
+
+.collaborative-capsule-container form input[type="file"] {
+  background-color: #f1f5f9;
+  padding: 1.2rem;
+  cursor: pointer;
 }
 
 .collaborative-capsule-container form button {
   width: 100%;
-  padding: 0.75rem;
-  background-color: #1e3c72;
+  padding: 1rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
   color: #fff;
   border: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(56, 189, 248, 0.25);
+  margin-top: 0.5rem;
 }
+
+.collaborative-capsule-container form button:hover {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(56, 189, 248, 0.3);
+}
+
+.collaborative-capsule-container form button:active {
+  transform: translateY(0);
+}
+
+.error-message {
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+@media (max-width: 600px) {
+  .collaborative-capsule-container {
+    margin: 2.5rem 1rem;
+    padding: 2rem;
+  }
+
+  .collaborative-capsule-container h2 {
+    font-size: 1.6rem;
+  }
+
+  .collaborative-capsule-container form input,
+  .collaborative-capsule-container form textarea,
+  .collaborative-capsule-container form button {
+    padding: 0.9rem;
+  }
+}
+

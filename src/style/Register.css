@@ -1,41 +1,120 @@
-/* Register.css */
 .register-container {
-    max-width: 400px;
-    margin: 3rem auto;
-    background: #fff;
+  max-width: 450px;
+  margin: 4rem auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2.5rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.register-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.register-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 2rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.register-container h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+  border-radius: 3px;
+}
+
+.register-container form {
+  animation: slideUp 0.5s ease-in-out 0.2s both;
+}
+
+.register-container form input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.register-container form input:focus {
+  border-color: #38bdf8;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
+}
+
+.register-container form button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(56, 189, 248, 0.25);
+}
+
+.register-container form button:hover {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(56, 189, 248, 0.3);
+}
+
+.register-container form button:active {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .register-container {
+    margin: 3rem 1rem;
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-  
+
   .register-container h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: #2a5298;
+    font-size: 1.8rem;
   }
-  
-  .register-container form input {
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
+
+  .register-container form input,
   .register-container form button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #1e3c72;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    font-weight: 500;
+    padding: 0.9rem;
   }
-  
-  .register-container form button:hover {
-    background-color: #16325c;
-  }
-  
+}
+
