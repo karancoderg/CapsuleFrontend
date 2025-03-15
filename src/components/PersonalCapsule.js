@@ -1,124 +1,126 @@
-import { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../context/Authcontext";
-import { useNavigate } from "react-router-dom";
-import "../style/PersonalCapsule.css";
-import api from "../api/config";
+"use client"
+
+import { useState, useContext, useEffect } from "react"
+import { AuthContext } from "../context/Authcontext"
+import { useNavigate } from "react-router-dom"
+import "../style/PersonalCapsule.css"
+import api from "../api/config"
 
 const PersonalCapsule = () => {
-  const { token } = useContext(AuthContext);
+  const { token } = useContext(AuthContext)
   const [capsuleData, setCapsuleData] = useState({
     title: "",
     description: "",
-    lockDate: ""
-  });
-  const [file, setFile] = useState(null);
-  const [error, setError] = useState("");
-  const [s3Status, setS3Status] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+    lockDate: "",
+  })
+  const [file, setFile] = useState(null)
+  const [error, setError] = useState("")
+  const [s3Status, setS3Status] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const navigate = useNavigate()
 
   // Test S3 connectivity when component mounts
   useEffect(() => {
     const testS3Connection = async () => {
       try {
-        const res = await api.get("/api/capsules/test-s3");
-        console.log("S3 connection test result:", res.data);
-        setS3Status({ success: true, message: "S3 connection successful" });
+        const res = await api.get("/api/capsules/test-s3")
+        console.log("S3 connection test result:", res.data)
+        setS3Status({ success: true, message: "S3 connection successful" })
       } catch (error) {
-        console.error("S3 connection test failed:", error.response?.data || error.message);
-        setS3Status({ 
-          success: false, 
-          message: error.response?.data?.message || "S3 connection failed" 
-        });
-        setError("Warning: S3 storage connection failed. File uploads may not work.");
+        console.error("S3 connection test failed:", error.response?.data || error.message)
+        setS3Status({
+          success: false,
+          message: error.response?.data?.message || "S3 connection failed",
+        })
+        setError("Warning: S3 storage connection failed. File uploads may not work.")
       }
-    };
+    }
 
     if (token) {
-      testS3Connection();
+      testS3Connection()
     }
-  }, [token]);
+  }, [token])
 
   const handleChange = (e) => {
-    setCapsuleData({ ...capsuleData, [e.target.name]: e.target.value });
-  };
+    setCapsuleData({ ...capsuleData, [e.target.name]: e.target.value })
+  }
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    setFile(e.target.files[0])
+  }
 
   const uploadFile = async () => {
-    if (!file) return null;
+    if (!file) return null
     try {
-      const formData = new FormData();
-      formData.append("mediaFile", file);
+      const formData = new FormData()
+      formData.append("mediaFile", file)
 
-      console.log("Uploading file:", file.name, "Type:", file.type, "Size:", file.size);
-      
+      console.log("Uploading file:", file.name, "Type:", file.type, "Size:", file.size)
+
       const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
-      });
+      })
 
-      console.log("File upload response:", res.data); // Debugging
-      
+      console.log("File upload response:", res.data) // Debugging
+
       if (!res.data.url) {
-        console.error("No URL returned from upload:", res.data);
-        throw new Error("No URL returned from upload");
+        console.error("No URL returned from upload:", res.data)
+        throw new Error("No URL returned from upload")
       }
-      
-      return res.data.url;
+
+      return res.data.url
     } catch (error) {
-      console.error("File upload error:", error.response?.data || error.message);
-      
+      console.error("File upload error:", error.response?.data || error.message)
+
       // Show more detailed error message
-      let errorMessage = "File upload failed";
-      
+      let errorMessage = "File upload failed"
+
       if (error.response?.data) {
-        const responseData = error.response.data;
-        
+        const responseData = error.response.data
+
         if (responseData.error === "file_type_not_allowed") {
-          errorMessage = responseData.message || "File type not allowed. Please check the list of allowed file types.";
+          errorMessage = responseData.message || "File type not allowed. Please check the list of allowed file types."
         } else if (responseData.error === "no_file") {
-          errorMessage = "No file was received by the server. Please try again.";
+          errorMessage = "No file was received by the server. Please try again."
         } else if (responseData.message) {
-          errorMessage = responseData.message;
+          errorMessage = responseData.message
         }
       } else if (error.message) {
-        errorMessage = error.message;
+        errorMessage = error.message
       }
-      
-      throw new Error(errorMessage);
+
+      throw new Error(errorMessage)
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+    e.preventDefault()
+
     // Prevent multiple submissions
     if (isSubmitting) {
-      console.log("Submission already in progress, ignoring click");
-      return;
+      console.log("Submission already in progress, ignoring click")
+      return
     }
-    
+
     if (!file) {
-      setError("Media file is required.");
-      return;
+      setError("Media file is required.")
+      return
     }
-    
-    setIsSubmitting(true);
-    setError("");
-    
+
+    setIsSubmitting(true)
+    setError("")
+
     try {
       // Upload the file first
-      let mediaUrl = "";
+      let mediaUrl = ""
       if (file) {
-        mediaUrl = await uploadFile();
+        mediaUrl = await uploadFile()
       }
 
       if (!mediaUrl) {
-        throw new Error("Failed to upload media file");
+        throw new Error("Failed to upload media file")
       }
 
       const payload = {
@@ -127,34 +129,34 @@ const PersonalCapsule = () => {
         media: mediaUrl ? [{ url: mediaUrl, type: file.type }] : [],
         lockDate: capsuleData.lockDate || null,
         type: "personal",
-      };
+      }
 
-      const res = await api.post("/api/capsules", payload);
+      const res = await api.post("/api/capsules", payload)
 
-      console.log("Capsule creation response:", res.data); // Debugging
-      alert("Personal capsule created successfully!");
-      navigate("/");
+      console.log("Capsule creation response:", res.data) // Debugging
+      alert("Personal capsule created successfully!")
+      navigate("/")
     } catch (error) {
-      console.error("Error creating personal capsule:", error.response?.data || error.message);
-      setError(error.response?.data?.message || error.message || "Error creating capsule");
+      console.error("Error creating personal capsule:", error.response?.data || error.message)
+      setError(error.response?.data?.message || error.message || "Error creating capsule")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="personal-capsule-container">
       <h2>Create Personal Capsule</h2>
-      
+
       {s3Status && !s3Status.success && (
         <div className="s3-status error">
           <p>{s3Status.message}</p>
           <p>File uploads may not work. Please contact the administrator.</p>
         </div>
       )}
-      
+
       {error && <p className="error-message">{error}</p>}
-      
+
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -181,8 +183,8 @@ const PersonalCapsule = () => {
           disabled={isSubmitting}
         />
         <p className="file-types-help">
-          Allowed file types: Images (jpg, png, gif, webp, svg), Videos (mp4, mov, avi, webm, mkv), 
-          Documents (pdf, doc, docx, xls, xlsx, ppt, pptx, txt, rtf), Audio (mp3, wav, ogg, aac)
+          Allowed file types: Images (jpg, png, gif, webp, svg), Videos (mp4, mov, avi, webm, mkv), Documents (pdf, doc,
+          docx, xls, xlsx, ppt, pptx, txt, rtf), Audio (mp3, wav, ogg, aac)
         </p>
         <input
           type="date"
@@ -194,8 +196,8 @@ const PersonalCapsule = () => {
           disabled={isSubmitting}
         />
         {error && <p className="error-message">{error}</p>}
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSubmitting || (s3Status && !s3Status.success)}
           className={isSubmitting ? "submitting" : ""}
         >
@@ -203,7 +205,8 @@ const PersonalCapsule = () => {
         </button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default PersonalCapsule;
+export default PersonalCapsule
+

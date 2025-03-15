@@ -1,94 +1,142 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { AuthProvider, AuthContext } from "./context/Authcontext";
-import { useContext } from "react";
-import Navbar from "./components/Navbar";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
-import PersonalCapsule from "./components/PersonalCapsule"; // Capsule creation for personal capsules
-import CollaborativeCapsule from "./components/CollaborativeCapsule"; // Capsule creation for collaborative capsules
-import CapsuleManager from "./components/CapsuleManager"; // (Optional: list view for capsules)
-import CapsuleDetail from "./components/CapsuleDetail"; // Detail view for a single capsule
-import PersonalCapsuleTree from "./components/PersonalCapsuleTree"; // Tree view for personal capsules
-import CollaborativeCapsuleTree from "./components/CollaborativeCapsuleTree"; // Tree view for collaborative capsules
-import ForgotPassword from "./components/forgot-password"; // New Forgot Password page
-import ResetPassword from "./components/reset-password/[token]"; // New Reset Password page
-import ProtectedRoute from "./components/ProtectedRoute"; // Protected route wrapper
-import "./App.css";
+"use client"
 
-// Loading component
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { AuthProvider, AuthContext } from "./context/Authcontext"
+import { useContext, useEffect } from "react"
+import { TransitionGroup, CSSTransition } from "react-transition-group"
+import Navbar from "./components/Navbar"
+import Login from "./components/Login"
+import Register from "./components/Register"
+import Dashboard from "./components/Dashboard"
+import PersonalCapsule from "./components/PersonalCapsule"
+import CollaborativeCapsule from "./components/CollaborativeCapsule"
+import CapsuleManager from "./components/CapsuleManager"
+import CapsuleDetail from "./components/CapsuleDetail"
+import PersonalCapsuleTree from "./components/PersonalCapsuleTree"
+import CollaborativeCapsuleTree from "./components/CollaborativeCapsuleTree"
+import ForgotPassword from "./components/forgot-password"
+import ResetPassword from "./components/reset-password/[token]"
+import ProtectedRoute from "./components/ProtectedRoute"
+import "./App.css"
+
+// Loading component with animation
 const LoadingSpinner = () => (
   <div className="loading-container">
     <div className="loading-spinner"></div>
-    <p>Loading...</p>
+    <p>Loading your capsules...</p>
   </div>
-);
+)
+
+// Animated routes wrapper
+const AnimatedRoutes = () => {
+  const location = useLocation()
+
+  return (
+    <TransitionGroup component={null}>
+      <CSSTransition key={location.key} classNames="page-transition" timeout={300}>
+        <Routes location={location}>
+          {/* Public routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-personal-capsule"
+            element={
+              <ProtectedRoute>
+                <PersonalCapsule />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create-collaborative-capsule"
+            element={
+              <ProtectedRoute>
+                <CollaborativeCapsule />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/capsules"
+            element={
+              <ProtectedRoute>
+                <CapsuleManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/capsules/:capsuleId"
+            element={
+              <ProtectedRoute>
+                <CapsuleDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/view-personal-capsules"
+            element={
+              <ProtectedRoute>
+                <PersonalCapsuleTree />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/view-collaborative-capsules"
+            element={
+              <ProtectedRoute>
+                <CollaborativeCapsuleTree />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </CSSTransition>
+    </TransitionGroup>
+  )
+}
 
 // Main app with routes
 const AppRoutes = () => {
-  const { loading } = useContext(AuthContext);
+  const { loading } = useContext(AuthContext)
+  const location = useLocation()
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location])
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner />
   }
 
   return (
-    <Router>
+    <div className="app-wrapper">
       <Navbar />
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        
-        {/* Protected routes */}
-        <Route path="/" element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/create-personal-capsule" element={
-          <ProtectedRoute>
-            <PersonalCapsule />
-          </ProtectedRoute>
-        } />
-        <Route path="/create-collaborative-capsule" element={
-          <ProtectedRoute>
-            <CollaborativeCapsule />
-          </ProtectedRoute>
-        } />
-        <Route path="/capsules" element={
-          <ProtectedRoute>
-            <CapsuleManager />
-          </ProtectedRoute>
-        } />
-        <Route path="/capsules/:capsuleId" element={
-          <ProtectedRoute>
-            <CapsuleDetail />
-          </ProtectedRoute>
-        } />
-        <Route path="/view-personal-capsules" element={
-          <ProtectedRoute>
-            <PersonalCapsuleTree />
-          </ProtectedRoute>
-        } />
-        <Route path="/view-collaborative-capsules" element={
-          <ProtectedRoute>
-            <CollaborativeCapsuleTree />
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </Router>
-  );
-};
+      <main className="main-content">
+        <AnimatedRoutes />
+      </main>
+    </div>
+  )
+}
 
 function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <Router>
+        <AppRoutes />
+      </Router>
     </AuthProvider>
-  );
+  )
 }
 
-export default App;
+export default App
+

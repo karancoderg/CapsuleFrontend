@@ -1,25 +1,27 @@
-import { useState } from "react";
-import api from "../api/config";
+"use client"
+
+import { useState } from "react"
+import api from "../api/config"
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("")
+  const [message, setMessage] = useState("")
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
       const res = await api.post("/api/auth/forgot-password", {
         email: email.toLowerCase(),
-      });
+      })
 
-      setMessage(res.data.message);
-      setError("");
+      setMessage(res.data.message)
+      setError("")
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
-      setMessage("");
+      setError(err.response?.data?.message || "Something went wrong")
+      setMessage("")
     }
-  };
+  }
 
   return (
     <div className="forgot-password-container">
@@ -37,7 +39,8 @@ const ForgotPassword = () => {
         <button type="submit">Send Reset Link</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default ForgotPassword;
+export default ForgotPassword
+

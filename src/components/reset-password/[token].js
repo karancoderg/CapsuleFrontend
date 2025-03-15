@@ -1,33 +1,35 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import api from "../../api/config";
+"use client"
+
+import { useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
+import api from "../../api/config"
 
 const ResetPassword = () => {
-  const { token } = useParams(); // Get token from the URL
-  const navigate = useNavigate();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const { token } = useParams() // Get token from the URL
+  const navigate = useNavigate()
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (password !== confirmPassword) {
-      setError("Passwords do not match!");
-      return;
+      setError("Passwords do not match!")
+      return
     }
 
     try {
-        await api.post(`/api/auth/reset-password/${token}`, {
+      await api.post(`/api/auth/reset-password/${token}`, {
         token,
         password,
-      });
+      })
 
-      alert("Password reset successful! You can now log in.");
-      navigate("/login");
+      alert("Password reset successful! You can now log in.")
+      navigate("/login")
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong");
+      setError(err.response?.data?.message || "Something went wrong")
     }
-  };
+  }
 
   return (
     <div className="reset-password-container">
@@ -51,7 +53,8 @@ const ResetPassword = () => {
         <button type="submit">Reset Password</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default ResetPassword;
+export default ResetPassword
+

@@ -1,99 +1,101 @@
-import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../context/Authcontext"; // Ensure proper casing
-import { Link } from "react-router-dom";
-import "../style/CapsuleManager.css";
-import api from "../api/config";
+"use client"
+
+import { useState, useEffect, useContext } from "react"
+import { AuthContext } from "../context/Authcontext" // Ensure proper casing
+import { Link } from "react-router-dom"
+import "../style/CapsuleManager.css"
+import api from "../api/config"
 
 const CapsuleManager = () => {
-  const { token } = useContext(AuthContext);
+  const { token } = useContext(AuthContext)
   const [capsuleData, setCapsuleData] = useState({
     title: "",
     content: "",
-    lockDate: ""
-  });
-  const [memberEmails, setMemberEmails] = useState("");
-  const [file, setFile] = useState(null);
-  const [capsules, setCapsules] = useState([]);
+    lockDate: "",
+  })
+  const [memberEmails, setMemberEmails] = useState("")
+  const [file, setFile] = useState(null)
+  const [capsules, setCapsules] = useState([])
 
   const handleChange = (e) => {
-    setCapsuleData({ ...capsuleData, [e.target.name]: e.target.value });
-  };
+    setCapsuleData({ ...capsuleData, [e.target.name]: e.target.value })
+  }
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
+    setFile(e.target.files[0])
+  }
 
   const handleMemberEmailsChange = (e) => {
-    setMemberEmails(e.target.value);
-  };
+    setMemberEmails(e.target.value)
+  }
 
   const uploadFile = async () => {
-    if (!file) return null;
+    if (!file) return null
     try {
-      const formData = new FormData();
-      formData.append("mediaFile", file);
+      const formData = new FormData()
+      formData.append("mediaFile", file)
       const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      });
-      return res.data.fileUrl;
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      return res.data.fileUrl
     } catch (error) {
-      console.error("File upload error:", error.response?.data || error.message);
-      return null;
+      console.error("File upload error:", error.response?.data || error.message)
+      return null
     }
-  };
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      let mediaUrl = "";
+      let mediaUrl = ""
       if (file) {
-        mediaUrl = await uploadFile();
+        mediaUrl = await uploadFile()
       }
 
       const memberEmailsArray = memberEmails
         .split(",")
-        .map(email => email.trim())
-        .filter(email => email !== "");
+        .map((email) => email.trim())
+        .filter((email) => email !== "")
 
       const payload = {
         title: capsuleData.title,
         content: capsuleData.content,
         media: mediaUrl ? [mediaUrl] : [],
         lockDate: capsuleData.lockDate || null,
-        memberEmails: memberEmailsArray
-      };
+        memberEmails: memberEmailsArray,
+      }
 
-      console.log("Sending Capsule Payload:", payload);
-      console.log("Using Token:", token);
+      console.log("Sending Capsule Payload:", payload)
+      console.log("Using Token:", token)
 
-      const res = await api.post("/api/capsules", payload);
+      const res = await api.post("/api/capsules", payload)
 
-      console.log("Capsule created:", res.data);
-      fetchCapsules();
-      setCapsuleData({ title: "", content: "", lockDate: "" });
-      setMemberEmails("");
-      setFile(null);
+      console.log("Capsule created:", res.data)
+      fetchCapsules()
+      setCapsuleData({ title: "", content: "", lockDate: "" })
+      setMemberEmails("")
+      setFile(null)
     } catch (error) {
-      console.error("Error creating capsule:", error.response?.data || error.message);
+      console.error("Error creating capsule:", error.response?.data || error.message)
     }
-  };
+  }
 
   const fetchCapsules = async () => {
     try {
-      const res = await api.get("/api/capsules");
-      setCapsules(res.data);
+      const res = await api.get("/api/capsules")
+      setCapsules(res.data)
     } catch (error) {
-      console.error("Error fetching capsules:", error.response?.data || error.message);
+      console.error("Error fetching capsules:", error.response?.data || error.message)
     }
-  };
+  }
 
   useEffect(() => {
     if (token) {
-      fetchCapsules();
+      fetchCapsules()
     }
-  }, [token]);
+  }, [token])
 
   return (
     <div className="capsule-manager-container">
@@ -107,17 +109,8 @@ const CapsuleManager = () => {
           onChange={handleChange}
           required
         />
-        <textarea
-          name="content"
-          placeholder="Content"
-          value={capsuleData.content}
-          onChange={handleChange}
-        ></textarea>
-        <input
-          type="file"
-          name="mediaFile"
-          onChange={handleFileChange}
-        />
+        <textarea name="content" placeholder="Content" value={capsuleData.content} onChange={handleChange}></textarea>
+        <input type="file" name="mediaFile" onChange={handleFileChange} />
         <input
           type="date"
           name="lockDate"
@@ -140,7 +133,7 @@ const CapsuleManager = () => {
         <ul className="capsule-list">
           {capsules.map((cap) => {
             // Determine if the capsule is locked
-            const isLocked = cap.lockDate && new Date(cap.lockDate) > new Date();
+            const isLocked = cap.lockDate && new Date(cap.lockDate) > new Date()
 
             return (
               <li key={cap._id}>
@@ -150,7 +143,9 @@ const CapsuleManager = () => {
 
                 {isLocked ? (
                   <>
-                    <p><strong>🔒 Locked</strong></p>
+                    <p>
+                      <strong>🔒 Locked</strong>
+                    </p>
                     <p>Unlock Date: {new Date(cap.lockDate).toLocaleDateString()}</p>
                   </>
                 ) : (
@@ -160,28 +155,25 @@ const CapsuleManager = () => {
                       <div>
                         <p>Media:</p>
                         {cap.media.map((url, index) => (
-                          <img key={index} src={url} alt="capsule media" style={{ maxWidth: '100%' }} />
+                          <img key={index} src={url} alt="capsule media" style={{ maxWidth: "100%" }} />
                         ))}
                       </div>
                     )}
-                    {cap.lockDate && (
-                      <p>Lock Date: {new Date(cap.lockDate).toLocaleDateString()}</p>
-                    )}
+                    {cap.lockDate && <p>Lock Date: {new Date(cap.lockDate).toLocaleDateString()}</p>}
                   </>
                 )}
 
-                {cap.members && cap.members.length > 0 && (
-                  <p>Collaborators: {cap.members.length}</p>
-                )}
+                {cap.members && cap.members.length > 0 && <p>Collaborators: {cap.members.length}</p>}
               </li>
-            );
+            )
           })}
         </ul>
       ) : (
         <p>No capsules created yet.</p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default CapsuleManager;
+export default CapsuleManager
+
