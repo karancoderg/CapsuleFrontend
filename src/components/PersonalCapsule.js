@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import "../style/PersonalCapsule.css";
+import api from "../api/config";
 
 const PersonalCapsule = () => {
   const { token } = useContext(AuthContext);
@@ -21,7 +21,7 @@ const PersonalCapsule = () => {
   useEffect(() => {
     const testS3Connection = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/capsules/test-s3");
+        const res = await api.get("/api/capsules/test-s3");
         console.log("S3 connection test result:", res.data);
         setS3Status({ success: true, message: "S3 connection successful" });
       } catch (error) {
@@ -55,10 +55,9 @@ const PersonalCapsule = () => {
 
       console.log("Uploading file:", file.name, "Type:", file.type, "Size:", file.size);
       
-      const res = await axios.post("http://localhost:5000/api/capsules/upload", formData, {
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
         },
       });
 
@@ -130,12 +129,7 @@ const PersonalCapsule = () => {
         type: "personal",
       };
 
-      const res = await axios.post("http://localhost:5000/api/capsules", payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.post("/api/capsules", payload);
 
       console.log("Capsule creation response:", res.data); // Debugging
       alert("Personal capsule created successfully!");

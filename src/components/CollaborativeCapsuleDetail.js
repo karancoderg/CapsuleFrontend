@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import Timer from "./Timer";
 import "../style/CollaborativeCapsuleDetail.css";
+import api from "../api/config";
 
 const CollaborativeCapsuleDetail = () => {
   const { token, user } = useContext(AuthContext);
@@ -19,9 +19,7 @@ const CollaborativeCapsuleDetail = () => {
   // Fetch capsule details (including entries) from backend
   const fetchCapsule = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/capsules/${capsuleId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get(`/api/capsules/${capsuleId}`);
       setCapsule(res.data);
     } catch (err) {
       console.error("Error fetching capsule:", err.response?.data || err.message);
@@ -49,10 +47,9 @@ const CollaborativeCapsuleDetail = () => {
     try {
       const formData = new FormData();
       formData.append("mediaFile", file);
-      const res = await axios.post("http://localhost:5000/api/capsules/upload", formData, {
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          "Content-Type": "multipart/form-data"
         }
       });
       return res.data.fileUrl;
@@ -77,13 +74,12 @@ const CollaborativeCapsuleDetail = () => {
         media: mediaUrl ? [{ url: mediaUrl, type: file.type }] : []
       };
 
-      const res = await axios.post(
-        `http://localhost:5000/api/capsules/${capsuleId}/entries`,
+      const res = await api.post(
+        `/api/capsules/${capsuleId}/entries`,
         payload,
         {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            "Content-Type": "application/json"
           }
         }
       );

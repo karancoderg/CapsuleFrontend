@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import "../style/Register.css";
-import axios from "axios";
+import api from "../api/config";
 
 const Register = () => {
   const { register, setUserAndToken } = useContext(AuthContext);
@@ -95,7 +95,7 @@ const Register = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/verify-registration", {
+      const response = await api.post("/api/auth/verify-registration", {
         email: registeredEmail,
         otp
       });

@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import "../style/CollaborativeCapsule.css";
+import api from "../api/config";
 
 const CollaborativeCapsule = () => {
   const { token } = useContext(AuthContext);
@@ -72,12 +72,7 @@ const CollaborativeCapsule = () => {
       };
 
       console.log("Creating collaborative capsule with payload:", payload);
-      const res = await axios.post("http://localhost:5000/api/capsules", payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.post("/api/capsules", payload);
       console.log("Capsule created successfully:", res.data);
       
       // Check if there are any members not found

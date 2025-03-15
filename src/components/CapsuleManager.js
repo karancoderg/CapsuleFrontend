@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext"; // Ensure proper casing
 import { Link } from "react-router-dom";
 import "../style/CapsuleManager.css";
+import api from "../api/config";
 
 const CapsuleManager = () => {
   const { token } = useContext(AuthContext);
@@ -32,10 +32,9 @@ const CapsuleManager = () => {
     try {
       const formData = new FormData();
       formData.append("mediaFile", file);
-      const res = await axios.post("http://localhost:5000/api/capsules/upload", formData, {
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          "Content-Type": "multipart/form-data"
         }
       });
       return res.data.fileUrl;
@@ -69,12 +68,7 @@ const CapsuleManager = () => {
       console.log("Sending Capsule Payload:", payload);
       console.log("Using Token:", token);
 
-      const res = await axios.post("http://localhost:5000/api/capsules", payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const res = await api.post("/api/capsules", payload);
 
       console.log("Capsule created:", res.data);
       fetchCapsules();
@@ -88,9 +82,7 @@ const CapsuleManager = () => {
 
   const fetchCapsules = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/capsules", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/api/capsules");
       setCapsules(res.data);
     } catch (error) {
       console.error("Error fetching capsules:", error.response?.data || error.message);

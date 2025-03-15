@@ -68,3 +68,17 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Backend Configuration
+
+This frontend application is configured to connect to the backend API at:
+
+```
+https://capsulebackend-1.onrender.com
+```
+
+The backend URL is configured in the `.env` file using the `REACT_APP_API_URL` environment variable. If you need to use a different backend URL, you can modify this value in the `.env` file.
+
+### API Configuration
+
+The application uses a centralized API configuration in `src/api/config.js` that creates an Axios instance with the base URL from the environment variable. All API calls should use this configuration to ensure consistent behavior.

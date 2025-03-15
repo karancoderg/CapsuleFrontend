@@ -1,10 +1,10 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import api, { setAuthToken } from "../api/config";
 
 const AuthContext = createContext();
 
 // Axios interceptor for debugging outgoing requests
-axios.interceptors.request.use(request => {
+api.interceptors.request.use(request => {
   console.log("Starting Request:", request);
   return request;
 });
@@ -20,9 +20,9 @@ const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem("token");
     if (storedToken && storedToken !== "undefined") {
       setToken(storedToken);
-      // Set the Axios default header with the Bearer prefix
-      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-      console.log("Token set in Axios defaults:", axios.defaults.headers.common["Authorization"]);
+      // Set the auth token in our API config
+      setAuthToken(storedToken);
+      console.log("Token set in API config");
       // Fetch user data using the stored token
       getUser(storedToken);
     } else {
@@ -33,9 +33,7 @@ const AuthProvider = ({ children }) => {
   const getUser = async (authToken) => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/auth/me", {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      const res = await api.get("/api/auth/me");
       setUser(res.data);
     } catch (error) {
       console.error("Authentication failed:", error);
@@ -50,7 +48,7 @@ const AuthProvider = ({ children }) => {
     if (authToken) {
       localStorage.setItem("token", authToken);
       setToken(authToken);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+      setAuthToken(authToken);
       setUser(userData);
     }
   };
@@ -58,7 +56,7 @@ const AuthProvider = ({ children }) => {
   const login = async (userData) => {
     try {
       console.log("Logging in with data:", userData);
-      const res = await axios.post("http://localhost:5000/api/auth/login", userData, {
+      const res = await api.post("/api/auth/login", userData, {
         headers: { "Content-Type": "application/json" },
       });
       // Check if token exists in the response
@@ -78,7 +76,7 @@ const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       console.log("Registering user with data:", userData);
-      const res = await axios.post("http://localhost:5000/api/auth/register", userData, {
+      const res = await api.post("/api/auth/register", userData, {
         headers: { "Content-Type": "application/json" },
       });
       console.log("Registration initiated:", res.data);
@@ -93,7 +91,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     setToken("");
     setUser(null);
-    delete axios.defaults.headers.common["Authorization"];
+    setAuthToken(null);
   };
 
   return (
