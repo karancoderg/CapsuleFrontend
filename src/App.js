@@ -2,7 +2,7 @@
 
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
 import { AuthProvider, AuthContext } from "./context/Authcontext"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { TransitionGroup, CSSTransition } from "react-transition-group"
 import Navbar from "./components/Navbar"
 import Login from "./components/Login"
@@ -30,77 +30,88 @@ const LoadingSpinner = () => (
 // Animated routes wrapper
 const AnimatedRoutes = () => {
   const location = useLocation()
+  const nodeRef = useRef(null)
 
   return (
-    <TransitionGroup component={null}>
-      <CSSTransition key={location.key} classNames="page-transition" timeout={300}>
-        <Routes location={location}>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
+    <div className="route-container">
+      <TransitionGroup component={null}>
+        <CSSTransition 
+          key={location.key} 
+          classNames="page-transition" 
+          timeout={300} 
+          unmountOnExit
+          nodeRef={nodeRef}
+        >
+          <div ref={nodeRef}>
+            <Routes location={location}>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-          {/* Protected routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-personal-capsule"
-            element={
-              <ProtectedRoute>
-                <PersonalCapsule />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/create-collaborative-capsule"
-            element={
-              <ProtectedRoute>
-                <CollaborativeCapsule />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/capsules"
-            element={
-              <ProtectedRoute>
-                <CapsuleManager />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/capsules/:capsuleId"
-            element={
-              <ProtectedRoute>
-                <CapsuleDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/view-personal-capsules"
-            element={
-              <ProtectedRoute>
-                <PersonalCapsuleTree />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/view-collaborative-capsules"
-            element={
-              <ProtectedRoute>
-                <CollaborativeCapsuleTree />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </CSSTransition>
-    </TransitionGroup>
+              {/* Protected routes */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create-personal-capsule"
+                element={
+                  <ProtectedRoute>
+                    <PersonalCapsule />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create-collaborative-capsule"
+                element={
+                  <ProtectedRoute>
+                    <CollaborativeCapsule />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/capsules"
+                element={
+                  <ProtectedRoute>
+                    <CapsuleManager />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/capsules/:capsuleId"
+                element={
+                  <ProtectedRoute>
+                    <CapsuleDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/view-personal-capsules"
+                element={
+                  <ProtectedRoute>
+                    <PersonalCapsuleTree />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/view-collaborative-capsules"
+                element={
+                  <ProtectedRoute>
+                    <CollaborativeCapsuleTree />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
   )
 }
 

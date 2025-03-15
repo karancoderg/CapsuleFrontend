@@ -1,6 +1,6 @@
 "use client"
 
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useContext, useState, useEffect } from "react"
 import { AuthContext } from "../context/Authcontext"
 import "../style/NavBar.css"
@@ -9,6 +9,7 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext)
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -31,11 +32,27 @@ const Navbar = () => {
     setMenuOpen(!menuOpen)
   }
 
+  const handleLogout = () => {
+    // Close menu first
+    setMenuOpen(false)
+    // Then perform logout
+    logout()
+    // Navigate to login page
+    navigate('/login')
+  }
+
+  const handleNavigation = (path) => {
+    // Close menu first
+    setMenuOpen(false)
+    // Then navigate
+    navigate(path)
+  }
+
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar-container">
         <div className="navbar-left">
-          <Link to="/" className="logo">
+          <Link to="/" className="logo" onClick={() => setMenuOpen(false)}>
             <span className="logo-text">Capsule</span>
             <span className="logo-dot"></span>
           </Link>
@@ -57,14 +74,14 @@ const Navbar = () => {
                 <span className="user-name">{user.name}</span>
               </div>
               <div className="nav-links">
-                <Link to="/" className="nav-link" onClick={() => setMenuOpen(false)}>
+                <button className="nav-link" onClick={() => handleNavigation('/')}>
                   Dashboard
-                </Link>
-                <Link to="/capsules" className="nav-link" onClick={() => setMenuOpen(false)}>
+                </button>
+                <button className="nav-link" onClick={() => handleNavigation('/capsules')}>
                   My Capsules
-                </Link>
+                </button>
               </div>
-              <button className="logout-button" onClick={logout}>
+              <button className="logout-button" onClick={handleLogout}>
                 <span>Logout</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -85,10 +102,10 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-link login-link" onClick={() => setMenuOpen(false)}>
+              <button className="nav-link login-link" onClick={() => handleNavigation('/login')}>
                 Login
-              </Link>
-              <Link to="/register" className="register-button" onClick={() => setMenuOpen(false)}>
+              </button>
+              <button className="register-button" onClick={() => handleNavigation('/register')}>
                 Register
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +123,7 @@ const Navbar = () => {
                   <line x1="20" y1="8" x2="20" y2="14"></line>
                   <line x1="23" y1="11" x2="17" y2="11"></line>
                 </svg>
-              </Link>
+              </button>
             </>
           )}
         </div>

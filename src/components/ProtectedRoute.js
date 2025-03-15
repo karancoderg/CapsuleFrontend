@@ -30,6 +30,11 @@ const ProtectedRoute = ({ children }) => {
 
     // Mark that we've had internal navigation in this session
     sessionStorage.setItem("internalNavigation", "true")
+
+    // Cleanup function to prevent memory leaks
+    return () => {
+      // Any cleanup if needed
+    }
   }, [loading])
 
   if (isChecking) {
@@ -46,6 +51,9 @@ const ProtectedRoute = ({ children }) => {
     // Determine if we should show the login message
     const showLoginMessage = isExternalNavigation() || location.pathname.includes("/capsules/")
 
+    // Store the current path for redirect after login
+    sessionStorage.setItem("redirectPath", location.pathname)
+
     // If not authenticated, redirect to login with the return URL
     return (
       <Navigate
@@ -60,7 +68,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   // If authenticated, render the protected component
-  return children
+  return <div className="protected-content">{children}</div>
 }
 
 export default ProtectedRoute

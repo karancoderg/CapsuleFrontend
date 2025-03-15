@@ -24,6 +24,7 @@ body {
   padding-top: calc(var(--header-height) + 1rem);
   padding-bottom: 2rem;
   animation: fadeIn 0.5s ease-in-out;
+  position: relative;
 }
 
 /* Navbar Styling */
@@ -308,16 +309,14 @@ button:disabled {
   }
 }
 
-/* Page Transitions */
+/* Fix for page transitions - simplified for React 18 compatibility */
 .page-transition-enter {
   opacity: 0;
-  transform: translateY(20px);
 }
 
 .page-transition-enter-active {
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity 300ms ease-in;
 }
 
 .page-transition-exit {
@@ -326,7 +325,14 @@ button:disabled {
 
 .page-transition-exit-active {
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 300ms ease-out;
+}
+
+/* Route container with proper positioning */
+.route-container {
+  position: relative;
+  min-height: 80vh;
+  width: 100%;
 }
 
 /* Responsive Styling */
