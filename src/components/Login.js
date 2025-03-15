@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../style/Login.css"; // Your existing styling
-import api from "../api/config";
+import axios from "axios";
 
 const Login = () => {
   const { login, user, setUserAndToken } = useContext(AuthContext);
@@ -81,7 +81,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await api.post("/api/auth/request-login-otp", {
+      const response = await axios.post("http://localhost:5000/api/auth/request-login-otp", {
         email: email.toLowerCase()
       });
       
@@ -102,7 +102,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await api.post("/api/auth/login-with-otp", {
+      const response = await axios.post("http://localhost:5000/api/auth/login-with-otp", {
         email: email.toLowerCase(),
         otp
       });

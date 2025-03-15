@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
+import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import "../style/CollaborativeCapsule.css";
-import api from "../api/config";
 
 const CollaborativeCapsule = () => {
   const { token } = useContext(AuthContext);
@@ -44,27 +44,50 @@ const CollaborativeCapsule = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
     
-    setIsSubmitting(true);
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      console.log("Submission already in progress, ignoring click");
+      return;
+    }
+    
     setError("");
-    
+    setMemberStatus(null);
+
+    if (!memberInput.trim()) {
+      setError("At least one member is required.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    console.log("Starting capsule creation process...");
+
     try {
-      // Parse member input
-      const members = parseMemberInput(memberInput);
+      const members = parseMemberInput(memberInput); // Parse the member input
       
-      // Create payload
       const payload = {
         ...capsuleData,
-        members,
-        type: "collaborative"
+        memberEmails: members, // This array now contains objects with { name, email }
+        type: "collaborative",
       };
+
+      console.log("Creating collaborative capsule with payload:", payload);
+      const res = await axios.post("http://localhost:5000/api/capsules", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Capsule created successfully:", res.data);
       
-      const res = await api.post("/api/capsules", payload);
-      
-      console.log("Collaborative capsule creation response:", res.data);
-      alert("Collaborative capsule created successfully!");
-      navigate("/");
+      // Check if there are any members not found
+      if (res.data.memberStatus && res.data.memberStatus.notFound && res.data.memberStatus.notFound.length > 0) {
+        setMemberStatus(res.data.memberStatus);
+        // Don't navigate away if there are warnings to show
+      } else {
+        alert("Collaborative capsule group created successfully!");
+        navigate("/"); // Redirect to Dashboard after creation
+      }
     } catch (error) {
       console.error("Error creating collaborative capsule:", error.response?.data || error.message);
       

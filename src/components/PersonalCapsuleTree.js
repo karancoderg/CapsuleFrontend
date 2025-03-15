@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import Timer from "./Timer";
 import "../style/PersonalCapsuleTree.css";
-import api from "../api/config";
 
 const PersonalCapsuleTree = () => {
   const { token } = useContext(AuthContext);
@@ -11,7 +11,9 @@ const PersonalCapsuleTree = () => {
   useEffect(() => {
     const fetchPersonalCapsules = async () => {
       try {
-        const res = await api.get("/api/capsules");
+        const res = await axios.get("http://localhost:5000/api/capsules", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
         if (res.data.personal) {
           setCapsules(res.data.personal);
