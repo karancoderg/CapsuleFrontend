@@ -2,167 +2,97 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: "Inter", "Roboto", sans-serif;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
   color: #333;
   min-height: 100vh;
 }
 
 /* Navbar Styling */
 nav {
-  background-color: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
 }
 
 nav a {
   color: #fff;
-  margin-right: 1.5rem;
+  margin-right: 1rem;
   text-decoration: none;
   font-weight: 500;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-nav a::after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: #38bdf8;
-  transition: width 0.3s ease;
 }
 
 nav a:hover {
-  color: #38bdf8;
-}
-
-nav a:hover::after {
-  width: 100%;
+  text-decoration: underline;
 }
 
 nav button {
-  background-color: #38bdf8;
+  background-color: #ff6b6b;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  color: #0f172a;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  color: #fff;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 nav button:hover {
-  background-color: #0ea5e9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+  background-color: #ff4757;
 }
 
 /* Container for Forms & Dashboard */
 .container,
 .dashboard {
-  max-width: 550px;
+  max-width: 500px;
   margin: 3rem auto;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2.5rem 3rem;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.container:hover,
-.dashboard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Headings */
 h2 {
   text-align: center;
-  margin-bottom: 2rem;
-  color: #0f172a;
-  font-weight: 700;
-  position: relative;
-  padding-bottom: 0.75rem;
-}
-
-h2::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-  border-radius: 3px;
+  margin-bottom: 1.5rem;
+  color: #2a5298;
 }
 
 /* Form Input Styles */
 input[type="text"],
 input[type="email"],
-input[type="password"],
-textarea {
-  padding: 0.9rem 1.2rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+input[type="password"] {
+  padding: 0.75rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   width: 100%;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: #f8fafc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-textarea:focus {
-  border-color: #38bdf8;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
 
 /* Button Styles */
 button {
-  padding: 0.9rem 1.2rem;
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  padding: 0.75rem;
+  background-color: #1e3c72;
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   width: 100%;
   font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(56, 189, 248, 0.25);
+  font-weight: 500;
 }
 
 button:hover {
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(56, 189, 248, 0.3);
-}
-
-button:active {
-  transform: translateY(0);
+  background-color: #16325c;
 }
 
 /* Dashboard Text */
 .dashboard p {
   font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: #334155;
-  line-height: 1.6;
+  margin-bottom: 0.75rem;
 }
 
 /* Additional Responsive Styling */
@@ -172,62 +102,40 @@ button:active {
     margin: 2rem 1rem;
     padding: 1.5rem;
   }
-
+  
   nav {
     flex-direction: column;
     text-align: center;
-    padding: 1rem;
-  }
-
-  nav a {
-    margin: 0.5rem;
   }
 }
 
-/* Animation Classes */
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+/* Add this at the end of your App.css file */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
 }
 
-.slide-up {
-  animation: slideUp 0.5s ease-in-out;
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #4caf50;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+.loading-container p {
+  color: #666;
+  font-size: 16px;
 }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
-}
-

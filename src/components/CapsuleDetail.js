@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import Timer from "./Timer";
 import "../style/CollaborativeCapsuleDetail.css";
+import "../style/PersonalCapsuleDetail.css";
+import api from "../api/config";
 
-const CollaborativeCapsuleDetail = () => {
+const CapsuleDetail = () => {
   const { token } = useContext(AuthContext);
   const { capsuleId } = useParams();
   const [capsule, setCapsule] = useState(null);
@@ -16,13 +17,12 @@ const CollaborativeCapsuleDetail = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch capsule details (including entries) from backend
   const fetchCapsule = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get(`/api/capsules/${capsuleId}`);
       setCapsule(res.data);
     } catch (err) {
       console.error("Error fetching capsule:", err.response?.data || err.message);
@@ -51,7 +51,7 @@ const CollaborativeCapsuleDetail = () => {
       const formData = new FormData();
       formData.append("mediaFile", file);
 
-      const res = await axios.post("${process.env.REACT_APP_API_URL}/api/capsules/upload", formData, {
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`
@@ -59,7 +59,7 @@ const CollaborativeCapsuleDetail = () => {
       });
 
       console.log("Uploaded file response:", res.data);
-      return res.data.fileUrl;  // Ensure backend correctly returns this field
+      return res.data.url;
     } catch (error) {
       console.error("File upload error:", error.response?.data || error.message);
       return null;
@@ -69,8 +69,16 @@ const CollaborativeCapsuleDetail = () => {
   // Submit new memory entry
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      console.log("Submission already in progress, ignoring click");
+      return;
+    }
+    
     setError("");
     setSuccess("");
+    setIsSubmitting(true);
 
     try {
       let mediaArray = [];
@@ -90,8 +98,8 @@ const CollaborativeCapsuleDetail = () => {
 
       console.log("Submitting payload:", JSON.stringify(payload, null, 2));
 
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}/entries`,
+      await api.post(
+        `/api/capsules/${capsuleId}/entries`,
         payload,
         {
           headers: {
@@ -108,6 +116,8 @@ const CollaborativeCapsuleDetail = () => {
     } catch (err) {
       console.error("Error adding entry:", err.response?.data || err.message);
       setError("Error adding memory entry.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -180,90 +190,136 @@ const CollaborativeCapsuleDetail = () => {
     );
   };
 
+  // Render media items
+  const renderMedia = (mediaItems) => {
+    if (!mediaItems || mediaItems.length === 0) return null;
+    
+    return (
+      <div className="media-container">
+        {mediaItems.map((mediaItem, index) => {
+          if (mediaItem.type?.startsWith("video/")) {
+            return (
+              <video key={index} controls className="capsule-media">
+                <source src={mediaItem.url} type={mediaItem.type} />
+                Your browser does not support the video tag.
+              </video>
+            );
+          } else if (mediaItem.type?.startsWith("audio/")) {
+            return (
+              <audio key={index} controls className="capsule-media">
+                <source src={mediaItem.url} type={mediaItem.type} />
+                Your browser does not support the audio element.
+              </audio>
+            );
+          } else {
+            return (
+              <img
+                key={index}
+                src={mediaItem.url || mediaItem}
+                alt="capsule media"
+                className="capsule-media"
+              />
+            );
+          }
+        })}
+      </div>
+    );
+  };
+
   if (!capsule) return <p>Loading capsule...</p>;
 
   // Check if the entire capsule is locked
   const isCapsuleLocked = capsule.lockDate && new Date(capsule.lockDate) > new Date();
-
-  return (
-    <div className="collab-capsule-detail">
-      <h2>{capsule.title}</h2>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
-
-      {/* Add Memory Form */}
-      <h3>Add Your Memory</h3>
-      <form onSubmit={handleSubmit} className="entry-form">
-        <textarea
-          name="content"
-          placeholder="Your memory..."
-          value={entryData.content}
-          onChange={handleEntryChange}
-          required
-        ></textarea>
-        <input
-          type="file"
-          name="entryFile"
-          onChange={handleFileChange}
-          accept="image/*,video/*,audio/*"
-        />
-        <input
-          type="date"
-          name="lockDate"
-          placeholder="Entry Lock Date (YYYY-MM-DD)"
-          value={entryData.lockDate}
-          onChange={handleEntryChange}
-        />
-        <button type="submit">Add Memory</button>
-      </form>
-
-      {/* Memory Entries */}
-      <h3>Memory Entries</h3>
-      {renderEntries()}
-
-      {/* Capsule-level content and media AFTER memory entries */}
-      {isCapsuleLocked ? (
-        <div className="capsule-locked">
-          <Timer targetDate={capsule.lockDate} />
-          <p>This capsule is locked until {new Date(capsule.lockDate).toLocaleDateString()}</p>
-        </div>
-      ) : (
-        <div className="capsule-unlocked">
-          {capsule.content && <p className="capsule-main-text">{capsule.content}</p>}
-          {capsule.media && capsule.media.length > 0 && (
-            <div className="media-container">
-              {capsule.media.map((mediaItem, index) => {
-                if (mediaItem.type?.startsWith("video/")) {
-                  return (
-                    <video key={index} controls className="capsule-media">
-                      <source src={mediaItem.url} type={mediaItem.type} />
-                      Your browser does not support the video tag.
-                    </video>
-                  );
-                } else if (mediaItem.type?.startsWith("audio/")) {
-                  return (
-                    <audio key={index} controls className="capsule-media">
-                      <source src={mediaItem.url} type={mediaItem.type} />
-                      Your browser does not support the audio element.
-                    </audio>
-                  );
-                } else {
-                  return (
-                    <img
-                      key={index}
-                      src={mediaItem.url || mediaItem}
-                      alt="capsule media"
-                      className="capsule-media"
-                    />
-                  );
-                }
-              })}
+  
+  // Render different layouts based on capsule type
+  if (capsule.type === "personal") {
+    return (
+      <div className="personal-capsule-detail">
+        <h2>{capsule.title}</h2>
+        {error && <p className="error">{error}</p>}
+        
+        <div className="capsule-info">
+          <p className="capsule-description">{capsule.description}</p>
+          
+          {isCapsuleLocked ? (
+            <div className="capsule-locked">
+              <Timer targetDate={capsule.lockDate} />
+              <p>This capsule is locked until {new Date(capsule.lockDate).toLocaleDateString()}</p>
+            </div>
+          ) : (
+            <div className="capsule-unlocked">
+              {capsule.content && <p className="capsule-main-text">{capsule.content}</p>}
+              {renderMedia(capsule.media)}
             </div>
           )}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  } else {
+    // Collaborative capsule layout
+    return (
+      <div className="collab-capsule-detail">
+        <h2>{capsule.title}</h2>
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
+
+        {/* Add Memory Form */}
+        <div className="add-entry-section">
+          <h3>Add a Memory</h3>
+          <form onSubmit={handleSubmit}>
+            <textarea
+              name="content"
+              placeholder="Share your memory..."
+              value={entryData.content}
+              onChange={handleEntryChange}
+              required
+              disabled={isSubmitting}
+            ></textarea>
+            <input
+              type="file"
+              onChange={handleFileChange}
+              accept="image/*,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+              disabled={isSubmitting}
+            />
+            <input
+              type="date"
+              name="lockDate"
+              placeholder="Lock until (optional)"
+              value={entryData.lockDate}
+              onChange={handleEntryChange}
+              disabled={isSubmitting}
+            />
+            {error && <p className="error-message">{error}</p>}
+            {success && <p className="success-message">{success}</p>}
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className={isSubmitting ? "submitting" : ""}
+            >
+              {isSubmitting ? "Adding Memory..." : "Add Memory"}
+            </button>
+          </form>
+        </div>
+
+        {/* Memory Entries */}
+        <h3>Memory Entries</h3>
+        {renderEntries()}
+
+        {/* Capsule-level content and media AFTER memory entries */}
+        {isCapsuleLocked ? (
+          <div className="capsule-locked">
+            <Timer targetDate={capsule.lockDate} />
+            <p>This capsule is locked until {new Date(capsule.lockDate).toLocaleDateString()}</p>
+          </div>
+        ) : (
+          <div className="capsule-unlocked">
+            {capsule.content && <p className="capsule-main-text">{capsule.content}</p>}
+            {renderMedia(capsule.media)}
+          </div>
+        )}
+      </div>
+    );
+  }
 };
 
-export default CollaborativeCapsuleDetail;
+export default CapsuleDetail;

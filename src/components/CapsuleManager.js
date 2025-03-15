@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext"; // Ensure proper casing
 import { Link } from "react-router-dom";
 import "../style/CapsuleManager.css";
+import api from "../api/config";
 
 const CapsuleManager = () => {
   const { token } = useContext(AuthContext);
@@ -29,71 +29,60 @@ const CapsuleManager = () => {
 
   const uploadFile = async () => {
     if (!file) return null;
+
     try {
       const formData = new FormData();
-      formData.append("mediaFile", file);
-      const res = await axios.post("${process.env.REACT_APP_API_URL}/api/capsules/upload", formData, {
+      formData.append("file", file);
+      
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
-        }
+        },
       });
+      
       return res.data.fileUrl;
     } catch (error) {
-      console.error("File upload error:", error.response?.data || error.message);
-      return null;
+      console.error("File upload error:", error);
+      throw error;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      let mediaUrl = "";
-      if (file) {
-        mediaUrl = await uploadFile();
-      }
-
-      const memberEmailsArray = memberEmails
-        .split(",")
-        .map(email => email.trim())
-        .filter(email => email !== "");
-
+      // First upload the file
+      const fileUrl = await uploadFile();
+      
+      // Then create the capsule with the file URL
       const payload = {
-        title: capsuleData.title,
-        content: capsuleData.content,
-        media: mediaUrl ? [mediaUrl] : [],
-        lockDate: capsuleData.lockDate || null,
-        memberEmails: memberEmailsArray
+        ...capsuleData,
+        fileUrl,
+        memberEmails: memberEmails.split(",").map(email => email.trim()).filter(email => email),
+        type: "collaborative"
       };
-
-      console.log("Sending Capsule Payload:", payload);
-      console.log("Using Token:", token);
-
-      const res = await axios.post("${process.env.REACT_APP_API_URL}/api/capsules", payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
-
+      
+      const res = await api.post("/api/capsules", payload);
+      
       console.log("Capsule created:", res.data);
-      fetchCapsules();
+      // Reset form
       setCapsuleData({ title: "", content: "", lockDate: "" });
       setMemberEmails("");
       setFile(null);
+      
+      // Refresh capsules list
+      fetchCapsules();
     } catch (error) {
-      console.error("Error creating capsule:", error.response?.data || error.message);
+      console.error("Error creating capsule:", error);
     }
   };
 
   const fetchCapsules = async () => {
     try {
-      const res = await axios.get("${process.env.REACT_APP_API_URL}/api/capsules", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get("/api/capsules");
       setCapsules(res.data);
     } catch (error) {
-      console.error("Error fetching capsules:", error.response?.data || error.message);
+      console.error("Error fetching capsules:", error);
     }
   };
 

@@ -1,9 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { AuthContext } from "../context/Authcontext";
 import Timer from "./Timer";
 import "../style/CollaborativeCapsuleDetail.css";
+import api from "../api/config";
 
 const CollaborativeCapsuleDetail = () => {
   const { token, user } = useContext(AuthContext);
@@ -19,9 +19,7 @@ const CollaborativeCapsuleDetail = () => {
   // Fetch capsule details (including entries) from backend
   const fetchCapsule = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await api.get(`/api/capsules/${capsuleId}`);
       setCapsule(res.data);
     } catch (err) {
       console.error("Error fetching capsule:", err.response?.data || err.message);
@@ -49,10 +47,9 @@ const CollaborativeCapsuleDetail = () => {
     try {
       const formData = new FormData();
       formData.append("mediaFile", file);
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/capsules/upload`, formData, {
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          "Content-Type": "multipart/form-data"
         }
       });
       return res.data.fileUrl;
@@ -77,13 +74,12 @@ const CollaborativeCapsuleDetail = () => {
         media: mediaUrl ? [{ url: mediaUrl, type: file.type }] : []
       };
 
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/capsules/${capsuleId}/entries`,
+      const res = await api.post(
+        `/api/capsules/${capsuleId}/entries`,
         payload,
         {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            "Content-Type": "application/json"
           }
         }
       );
@@ -135,6 +131,42 @@ const CollaborativeCapsuleDetail = () => {
     );
   };
 
+  // Helper function to render media items
+  const renderMedia = (mediaItems) => {
+    if (!mediaItems || mediaItems.length === 0) return null;
+    
+    return (
+      <div className="media-container">
+        {mediaItems.map((mediaItem, index) => {
+          if (mediaItem.type?.startsWith("video/")) {
+            return (
+              <video key={index} controls className="entry-media">
+                <source src={mediaItem.url} type={mediaItem.type} />
+                Your browser does not support the video tag.
+              </video>
+            );
+          } else if (mediaItem.type?.startsWith("audio/")) {
+            return (
+              <audio key={index} controls className="entry-media">
+                <source src={mediaItem.url} type={mediaItem.type} />
+                Your browser does not support the audio element.
+              </audio>
+            );
+          } else {
+            return (
+              <img
+                key={index}
+                src={mediaItem.url || mediaItem}
+                alt="entry media"
+                className="entry-media"
+              />
+            );
+          }
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className="collab-capsule-detail">
       <h2>{capsule ? capsule.title : "Loading capsule..."}</h2>
@@ -152,31 +184,7 @@ const CollaborativeCapsuleDetail = () => {
         capsule && (
           <div className="capsule-unlocked">
             {capsule.content && <p className="capsule-main-text">{capsule.content}</p>}
-            {capsule.media && capsule.media.length > 0 && (
-              <div className="media-container">
-                {capsule.media.map((mediaItem, index) => {
-                  if (mediaItem.type?.startsWith("video/")) {
-                    return (
-                      <video key={index} controls className="capsule-media">
-                        <source src={mediaItem.url} type={mediaItem.type} />
-                        Your browser does not support the video tag.
-                      </video>
-                    );
-                  } else if (mediaItem.type?.startsWith("audio/")) {
-                    return (
-                      <audio key={index} controls className="capsule-media">
-                        <source src={mediaItem.url} type={mediaItem.type} />
-                        Your browser does not support the audio element.
-                      </audio>
-                    );
-                  } else {
-                    return (
-                      <img key={index} src={mediaItem.url || mediaItem} alt="capsule media" className="capsule-media" />
-                    );
-                  }
-                })}
-              </div>
-            )}
+            {capsule.media && capsule.media.length > 0 && renderMedia(capsule.media)}
           </div>
         )
       )}

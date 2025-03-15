@@ -13,6 +13,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   // We'll initialize token as an empty string.
   const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Run this effect only once on mount
   useEffect(() => {
@@ -24,33 +25,46 @@ const AuthProvider = ({ children }) => {
       console.log("Token set in Axios defaults:", axios.defaults.headers.common["Authorization"]);
       // Fetch user data using the stored token
       getUser(storedToken);
+    } else {
+      setLoading(false);
     }
   }, []);
 
   const getUser = async (authToken) => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/auth/me`, {
+      setLoading(true);
+      const res = await axios.get("http://localhost:5000/api/auth/me", {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       setUser(res.data);
     } catch (error) {
       console.error("Authentication failed:", error);
       logout();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to set user and token (used for automatic login after registration)
+  const setUserAndToken = (userData, authToken) => {
+    if (authToken) {
+      localStorage.setItem("token", authToken);
+      setToken(authToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+      setUser(userData);
     }
   };
 
   const login = async (userData) => {
     try {
       console.log("Logging in with data:", userData);
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, userData, {
+      const res = await axios.post("http://localhost:5000/api/auth/login", userData, {
         headers: { "Content-Type": "application/json" },
       });
       // Check if token exists in the response
       if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        setToken(res.data.token);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-        getUser(res.data.token);
+        const { token, user } = res.data;
+        setUserAndToken(user, token);
         return res.data;
       } else {
         throw new Error("No token returned from login.");
@@ -64,10 +78,10 @@ const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       console.log("Registering user with data:", userData);
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, userData, {
+      const res = await axios.post("http://localhost:5000/api/auth/register", userData, {
         headers: { "Content-Type": "application/json" },
       });
-      console.log("Registration successful:", res.data);
+      console.log("Registration initiated:", res.data);
       return res.data;
     } catch (error) {
       console.error("Registration failed:", error.response?.data || error.message);
@@ -83,7 +97,15 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, token }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      token, 
+      loading,
+      setUserAndToken 
+    }}>
       {children}
     </AuthContext.Provider>
   );

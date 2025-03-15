@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/config";
 
 const ResetPassword = () => {
   const { token } = useParams(); // Get token from the URL
@@ -17,7 +17,7 @@ const ResetPassword = () => {
     }
 
     try {
-        await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/reset-password/${token}`, {
+        await api.post(`/api/auth/reset-password/${token}`, {
         token,
         password,
       });

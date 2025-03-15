@@ -1,8 +1,8 @@
-import { useState, useContext } from "react";
-import axios from "axios";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/Authcontext";
 import { useNavigate } from "react-router-dom";
 import "../style/PersonalCapsule.css";
+import api from "../api/config";
 
 const PersonalCapsule = () => {
   const { token } = useContext(AuthContext);
@@ -13,7 +13,28 @@ const PersonalCapsule = () => {
   });
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
+  const [s3Status, setS3Status] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  // Test S3 connectivity when component mounts
+  useEffect(() => {
+    const testS3Connection = async () => {
+      try {
+        const res = await api.get("/api/capsules/test-s3");
+        console.log("S3 connection test result:", res.data);
+        setS3Status({ success: true, message: "S3 connection successful" });
+      } catch (error) {
+        console.error("S3 connection test failed:", error.response?.data || error.message);
+        setS3Status({ 
+          success: false, 
+          message: error.response?.data?.message || "S3 connection failed" 
+        });
+      }
+    };
+
+    testS3Connection();
+  }, []);
 
   const handleChange = (e) => {
     setCapsuleData({ ...capsuleData, [e.target.name]: e.target.value });
@@ -25,97 +46,66 @@ const PersonalCapsule = () => {
 
   const uploadFile = async () => {
     if (!file) return null;
+
     try {
       const formData = new FormData();
-      formData.append("mediaFile", file);
-
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/capsules/upload`, formData, {
+      formData.append("file", file);
+      
+      console.log("Uploading file:", file.name, "Type:", file.type, "Size:", file.size);
+      
+      const res = await api.post("/api/capsules/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
         },
       });
-
-      console.log("File upload response:", res.data); // Debugging
+      
+      console.log("File upload response:", res.data);
       return res.data.fileUrl;
     } catch (error) {
       console.error("File upload error:", error.response?.data || error.message);
-      return null;
+      throw new Error(error.response?.data?.message || "File upload failed");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
-      setError("Media file is required.");
-      return;
-    }
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    setError("");
+    
     try {
-      let mediaUrl = "";
-      if (file) {
-        mediaUrl = await uploadFile();
+      // First upload the file
+      const fileUrl = await uploadFile();
+      if (!fileUrl) {
+        setError("File upload failed");
+        setIsSubmitting(false);
+        return;
       }
-
+      
+      // Then create the capsule with the file URL
       const payload = {
-        title: capsuleData.title,
-        description: capsuleData.description,
-        media: mediaUrl ? [{ url: mediaUrl, type: file.type }] : [],
-        lockDate: capsuleData.lockDate || null,
-        type: "personal",
+        ...capsuleData,
+        fileUrl,
+        type: "personal"
       };
-
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/capsules`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      
+      const res = await api.post("/api/capsules", payload);
+      
       console.log("Capsule creation response:", res.data); // Debugging
       alert("Personal capsule created successfully!");
       navigate("/");
     } catch (error) {
       console.error("Error creating personal capsule:", error.response?.data || error.message);
-      alert(error.response?.data?.message || "Error creating capsule");
+      setError(error.response?.data?.message || error.message || "Error creating capsule");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="personal-capsule-container">
-      <h2>Create Personal Capsule</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={capsuleData.title}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Description or memories"
-          value={capsuleData.description}
-          onChange={handleChange}
-        ></textarea>
-        <input
-          type="file"
-          name="mediaFile"
-          onChange={handleFileChange}
-          accept="image/*,video/*,audio/*"
-          required
-        />
-        <input
-          type="date"
-          name="lockDate"
-          placeholder="Unlock Date (YYYY-MM-DD)"
-          value={capsuleData.lockDate}
-          onChange={handleChange}
-          required
-        />
-        {error && <p className="error-message">{error}</p>}
-        <button type="submit">Create Personal Capsule</button>
-      </form>
+      {/* Render your form here */}
     </div>
   );
 };

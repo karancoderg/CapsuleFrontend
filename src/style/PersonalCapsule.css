@@ -1,165 +1,112 @@
 .personal-capsule-container {
-  max-width: 550px;
-  margin: 3.5rem auto;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2.5rem 3rem;
-  border-radius: 16px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.personal-capsule-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.personal-capsule-container h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #0f172a;
-  font-weight: 700;
-  font-size: 1.8rem;
-  position: relative;
-  padding-bottom: 0.75rem;
-}
-
-.personal-capsule-container h2::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-  border-radius: 3px;
-}
-
-.personal-capsule-container form {
-  animation: slideUp 0.5s ease-in-out 0.2s both;
-}
-
-.personal-capsule-container form input,
-.personal-capsule-container form textarea {
-  width: 100%;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  background-color: #f8fafc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.personal-capsule-container form textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.personal-capsule-container form input:focus,
-.personal-capsule-container form textarea:focus {
-  border-color: #38bdf8;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
-}
-
-.personal-capsule-container form input[type="file"] {
-  background-color: #f1f5f9;
-  padding: 1.2rem;
-  cursor: pointer;
-}
-
-.personal-capsule-container form button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(56, 189, 248, 0.25);
-  margin-top: 0.5rem;
-}
-
-.personal-capsule-container form button:hover {
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(56, 189, 248, 0.3);
-}
-
-.personal-capsule-container form button:active {
-  transform: translateY(0);
-}
-
-.error-message {
-  color: #ef4444;
-  background-color: #fee2e2;
-  padding: 0.75rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  font-weight: 500;
-  animation: shake 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-5px);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(5px);
-  }
-}
-
-@media (max-width: 600px) {
-  .personal-capsule-container {
-    margin: 2.5rem 1rem;
+    max-width: 600px;
+    margin: 2rem auto;
     padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
-
+  
   .personal-capsule-container h2 {
-    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
   }
-
-  .personal-capsule-container form input,
-  .personal-capsule-container form textarea,
-  .personal-capsule-container form button {
-    padding: 0.9rem;
+  
+  .personal-capsule-container form {
+    display: flex;
+    flex-direction: column;
   }
-}
-
+  
+  .personal-capsule-container input,
+  .personal-capsule-container textarea {
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .personal-capsule-container textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  .personal-capsule-container button {
+    padding: 12px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .personal-capsule-container button:hover:not(:disabled) {
+    background-color: #45a049;
+  }
+  
+  .personal-capsule-container button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .personal-capsule-container button.submitting {
+    background-color: #999;
+    cursor: wait;
+    position: relative;
+  }
+  
+  .personal-capsule-container button.submitting::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    right: 10px;
+    margin-top: -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .error-message {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .s3-status {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .s3-status.error {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+  }
+  
+  .s3-status p {
+    margin: 5px 0;
+  }
+  
+  .file-types-help {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  

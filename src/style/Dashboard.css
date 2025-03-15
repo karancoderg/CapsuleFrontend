@@ -1,161 +1,31 @@
 .dashboard-container {
-  max-width: 900px;
-  margin: 3rem auto;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 2.5rem;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.dashboard-container:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.dashboard-container h2 {
-  font-size: 2.2rem;
-  margin-bottom: 1.5rem;
-  color: #0f172a;
-  font-weight: 700;
-  position: relative;
-  padding-bottom: 0.75rem;
-}
-
-.dashboard-container h2::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-  border-radius: 3px;
-}
-
-.dashboard-container p {
-  font-size: 1.2rem;
-  color: #334155;
-  margin-bottom: 2rem;
-  animation: slideUp 0.5s ease-in-out 0.2s both;
-}
-
-.dashboard-options {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 3rem;
-}
-
-.create-capsule-option,
-.view-capsules-option {
-  flex: 1;
-  min-width: 300px;
-  background: #f8fafc;
+  max-width: 800px;
+  margin: 2rem auto;
+  background: #fff;
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out 0.4s both;
-}
-
-.create-capsule-option:hover,
-.view-capsules-option:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-}
-
-.create-capsule-option h3,
-.view-capsules-option h3 {
-  font-size: 1.5rem;
-  color: #0f172a;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-}
-
-.button-group {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.create-capsule-option button,
-.view-capsules-option button {
-  flex: 1;
-  padding: 0.9rem 1.2rem;
   border-radius: 10px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.create-capsule-option {
+  margin: 2rem 0;
+}
+
+.create-capsule-option h3 {
+  margin-bottom: 1rem;
 }
 
 .create-capsule-option button {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-  color: white;
-}
-
-.view-capsules-option button {
-  background: linear-gradient(135deg, #8b5cf6, #6366f1);
-  color: white;
-}
-
-.create-capsule-option button:hover,
-.view-capsules-option button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  margin: 0 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #1e3c72;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .create-capsule-option button:hover {
-  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  background-color: #16325c;
 }
-
-.view-capsules-option button:hover {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    margin: 2rem 1rem;
-    padding: 1.5rem;
-  }
-
-  .dashboard-options {
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .create-capsule-option,
-  .view-capsules-option {
-    min-width: auto;
-    padding: 1.5rem;
-  }
-
-  .button-group {
-    flex-direction: column;
-  }
-}
-
